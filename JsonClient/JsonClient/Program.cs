@@ -13,7 +13,7 @@ namespace JsonClient
             Comment comment;
             Client client = new Client();
             int option = 0;
-               
+             var commentController = new CommentController(); 
 
                while(option < 5){
                 Console.WriteLine("Select an option:\n 1 Get all\n 2 GetById\n 3 Create new Comment\n 4 Update Comment\n 5 exit");
@@ -22,21 +22,21 @@ namespace JsonClient
                 switch (option)
                 {
                     case 1:
-                       List<Comment> comments = await client.GetAll();
+                       List<Comment> comments = await commentController.GetAll(client);
                        foreach(Comment comm in comments){
                             Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}", comm.name, comm.email, comm.body);
                         }
                         break;
                     case 2:
-                        comment = await client.GetById(GetId());
+                        comment = await commentController.GetById(client, GetId());
                         Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}", comment.name, comment.email, comment.body);
                         break;
                     case 3:
-                       comment = await client.postComment(GetComment());
+                       comment = await commentController.postComment(client, GetComment());
                        Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}", comment.name, comment.email, comment.body);
                         break;
                     case 4:
-                       comment = await client.updateComment(GetId(), GetComment());
+                       comment = await commentController.updateComment(client, GetId(), GetComment());
                        Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}", comment.name, comment.email, comment.body);
                         break;        
                     default:
@@ -45,12 +45,7 @@ namespace JsonClient
                 }
 
                }
-                
-                
-                
-                
 
-            
         }
 
         public static Comment GetComment(){
