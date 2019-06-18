@@ -1,6 +1,6 @@
 public class Geo
 {
 
-    public decimal lat;
-    public decimal lng;
+    public decimal lat {get; set;}
+    public decimal lng {get; set;}
 }

@@ -45,12 +45,7 @@ namespace JsonClient
                 }
 
                }
-                
-                
-                
-                
 
-            
         }
 
         public static Comment GetComment(){

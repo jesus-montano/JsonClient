@@ -1,8 +1,8 @@
 public class Address
 {
-    public string street;
-    public string suite;
-    public string city;
-    public string zipcode;
+    public string street {get; set;}
+    public string suite {get; set;}
+    public string city {get; set;}
+    public string zipcode {get; set;}
     public Geo Geo {get; set;}     
 }
