@@ -31,12 +31,12 @@ namespace JsonClient
                         Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}", comment.name, comment.email, comment.body);
                         break;
                     case 3:
-                    //    comment = await commentController.postComment(client, GetComment());
-                       Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}", comment.name, comment.email, comment.body);
+                        comment = await client.postAsync(GetComment());
+                        Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}", comment.name, comment.email, comment.body);
                         break;
                     case 4:
-                    //    comment = await commentController.updateComment(client, GetId(), GetComment());
-                       Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}", comment.name, comment.email, comment.body);
+                        comment = await client.updateAsync(GetId(), GetComment());
+                        Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}", comment.name, comment.email, comment.body);
                         break;        
                     default:
                         Console.WriteLine("Default case");
@@ -71,4 +71,3 @@ namespace JsonClient
     }
 
 }
-   

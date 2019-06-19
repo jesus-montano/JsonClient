@@ -53,38 +53,40 @@ namespace JsonClient
             }
         }
 
-    //    public async Task<Comment> postComment(Client client, Comment comment){
-    //         //post Comment
-    //         try{
-    //             HttpResponseMessage response = await client.PostAsJsonAsync("comments", comment);
-    //             response.EnsureSuccessStatusCode();
+        public async Task<TModel> postAsync(TModel model){
+             //post Comment
+             try{
+                 var requestURL = $"{typeof(TModel).Name.ToLower()}s";
+                 HttpResponseMessage response = await client.PostAsJsonAsync(requestURL, model);
+                 response.EnsureSuccessStatusCode();
 
-    //             Comment comments = await response.Content.ReadAsAsync<Comment>();
-    //             Console.WriteLine("saved");
-    //             return comments;
+                 var models = await response.Content.ReadAsAsync<TModel>();
+                 Console.WriteLine("saved");
+                 return models;
 
-    //         }
-    //         catch(HttpRequestException e){
-    //             Console.WriteLine("{0}", e.Message);
-    //             return null;
-    //         }
-    //     }
+             }
+             catch(HttpRequestException e){
+                 Console.WriteLine("{0}", e.Message);
+                 return default(TModel);
+             }
+         }
 
-    //     public async Task<Comment> updateComment(Client client,string id, Comment comment){
-    //         //put Comment
-    //         try{
-    //             HttpResponseMessage response = await client.PutAsJsonAsync("comments/"+ id, comment);
-    //             response.EnsureSuccessStatusCode();
+         public async Task<TModel> updateAsync(string id, TModel model){
+             //put Comment
+             try{
+                  var requestURL = $"{typeof(TModel).Name.ToLower()}s";
+                 HttpResponseMessage response = await client.PutAsJsonAsync($"{requestURL}/{id}", model);
+                 response.EnsureSuccessStatusCode();
 
-    //             Comment comments = await response.Content.ReadAsAsync<Comment>();
-    //             Console.WriteLine("updated");
-    //             return comments;
+                 TModel models = await response.Content.ReadAsAsync<TModel>();
+                 Console.WriteLine("updated");
+                 return models;
 
-    //         }
-    //         catch(HttpRequestException e){
-    //             Console.WriteLine("{0}", e.Message);
-    //             return null;
-    //         }
-    //     }
+             }
+             catch(HttpRequestException e){
+                 Console.WriteLine("{0}", e.Message);
+                 return default(TModel);
+             }
+         }
         }
     }
