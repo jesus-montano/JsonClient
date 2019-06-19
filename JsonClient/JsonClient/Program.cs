@@ -23,21 +23,51 @@ namespace JsonClient
                 {
                     case 1:
                        var comments = await client.GetAsync();
-                       foreach(Comment comm in comments){
-                            Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}", comm.name, comm.email, comm.body);
-                        }
+                       if(comments != null)
+                       {
+                        foreach(Comment comm in comments){
+                                Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}\n", comm.name, comm.email, comm.body);
+                            }
+                       }else
+                       {
+                           Console.ForegroundColor = ConsoleColor.Red;
+                           Console.WriteLine("not found");
+                           Console.ResetColor();
+                       }
                         break;
                     case 2:
                         comment = await client.GetAsync(GetId());
+                        if(comment != null){
                         Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}", comment.name, comment.email, comment.body);
+                        }else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("not found");
+                            Console.ResetColor();
+                        }
+
                         break;
                     case 3:
                        comment = await client.PostAsync( GetComment());
+                       if(comment != null){
                        Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}", comment.name, comment.email, comment.body);
+                       }else
+                       {
+                          Console.ForegroundColor = ConsoleColor.Red;
+                          Console.WriteLine("error while Saved");
+                          Console.ResetColor();
+                       }
                         break;
                     case 4:
                        comment = await client.UpdateAsync( GetId(), GetComment());
+                       if(comment != null){
                        Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}", comment.name, comment.email, comment.body);
+                       }else
+                       {
+                          Console.ForegroundColor = ConsoleColor.Red;
+                          Console.WriteLine("error while updated");
+                          Console.ResetColor();
+                       }
                         break;        
                     default:
                         Console.WriteLine("Default case");
