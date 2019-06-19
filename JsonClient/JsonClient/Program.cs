@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Collections.Generic;
+
 namespace JsonClient
 {
     class Program
@@ -13,11 +13,11 @@ namespace JsonClient
             var comment =default(Comment);
             var client = new JsonClient<Comment>();
             int option = 0;
-             var commentController = new CommentController(); 
 
                while(option < 5){
                 Console.WriteLine("Select an option:\n 1 Get all\n 2 GetById\n 3 Create new Comment\n 4 Update Comment\n 5 exit");
                 option = Int32.Parse(Console.ReadLine());
+                
 
                 switch (option)
                 {
