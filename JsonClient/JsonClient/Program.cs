@@ -10,8 +10,8 @@ namespace JsonClient
            await runClient();
         }
         static async Task runClient(){
-            Comment comment;
-            Client client = new Client();
+            var comment =default(Comment);
+            var client = new JsonClient<Comment>();
             int option = 0;
              var commentController = new CommentController(); 
 
@@ -22,21 +22,21 @@ namespace JsonClient
                 switch (option)
                 {
                     case 1:
-                       List<Comment> comments = await commentController.GetAll(client);
+                       var comments = await client.GetAsync();
                        foreach(Comment comm in comments){
                             Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}", comm.name, comm.email, comm.body);
                         }
                         break;
                     case 2:
-                        comment = await commentController.GetById(client, GetId());
+                        comment = await client.GetAsync(GetId());
                         Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}", comment.name, comment.email, comment.body);
                         break;
                     case 3:
-                       comment = await commentController.postComment(client, GetComment());
+                       comment = await client.PostAsync( GetComment());
                        Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}", comment.name, comment.email, comment.body);
                         break;
                     case 4:
-                       comment = await commentController.updateComment(client, GetId(), GetComment());
+                       comment = await client.UpdateAsync( GetId(), GetComment());
                        Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}", comment.name, comment.email, comment.body);
                         break;        
                     default:

@@ -53,7 +53,7 @@ namespace JsonClient
             }
         }
 
-        public async Task<TModel> postAsync(TModel model){
+        public async Task<TModel> PostAsync(TModel model){
              //post Comment
              try{
                  var requestURL = $"{typeof(TModel).Name.ToLower()}s";
@@ -71,7 +71,7 @@ namespace JsonClient
              }
          }
 
-         public async Task<TModel> updateAsync(string id, TModel model){
+         public async Task<TModel> UpdateAsync(string id, TModel model){
              //put Comment
              try{
                   var requestURL = $"{typeof(TModel).Name.ToLower()}s";
