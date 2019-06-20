@@ -7,15 +7,36 @@ namespace JsonClient
     {
         static async Task Main(string[] args)
         {
-           await runClient();
+          // await runClient();
+         await GetObject(new Comment());
         }
         static async Task runClient(){
-            var comment =default(Comment);
-            var client = new JsonClient<Comment>();
+            
+            
             int option = 0;
+             while(option < 6){
+                Console.WriteLine("Select an option:\n 1 Comments\n 2 Post\n 3 Create new Comment\n 4 Update Comment\n 5 exit");
+                option = Int32.Parse(Console.ReadLine());
+                
 
-               while(option < 5){
-                Console.WriteLine("Select an option:\n 1 Get all\n 2 GetById\n 3 Create new Comment\n 4 Update Comment\n 5 exit");
+                switch (option)
+                {
+                    case 1:
+                       await Crudmenu<Comment>();
+                        break;
+                }
+             }
+
+               
+
+        }
+        static async  Task Crudmenu<TObject>(){
+            var client = new JsonClient<TObject>();
+            int option = 0;
+            var comment =default(TObject);
+            while(option < 5){
+                Console.WriteLine("Select an option:\n"+ 
+                "1 Get all\n 2 GetById\n 3 Create new Comment\n 4 Update Comment\n 5 exit");
                 option = Int32.Parse(Console.ReadLine());
                 
 
@@ -25,8 +46,8 @@ namespace JsonClient
                        var comments = await client.GetAsync();
                        if(comments != null)
                        {
-                        foreach(Comment comm in comments){
-                                Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}\n", comm.name, comm.email, comm.body);
+                        foreach(TObject comm in comments){
+                               // Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}\n", comm.name, comm.email, comm.body);
                             }
                        }else
                        {
@@ -38,7 +59,7 @@ namespace JsonClient
                     case 2:
                         comment = await client.GetAsync(GetId());
                         if(comment != null){
-                        Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}", comment.name, comment.email, comment.body);
+                        //Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}", comment.name, comment.email, comment.body);
                         }else
                         {
                             Console.ForegroundColor = ConsoleColor.Red;
@@ -48,9 +69,9 @@ namespace JsonClient
 
                         break;
                     case 3:
-                       comment = await client.PostAsync( GetComment());
+                       //comment = await client.PostAsync( GetComment());
                        if(comment != null){
-                       Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}", comment.name, comment.email, comment.body);
+                       //Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}", comment.name, comment.email, comment.body);
                        }else
                        {
                           Console.ForegroundColor = ConsoleColor.Red;
@@ -59,9 +80,9 @@ namespace JsonClient
                        }
                         break;
                     case 4:
-                       comment = await client.UpdateAsync( GetId(), GetComment());
+                       //comment = await client.UpdateAsync( GetId(), GetComment());
                        if(comment != null){
-                       Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}", comment.name, comment.email, comment.body);
+                       //Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}", comment.name, comment.email, comment.body);
                        }else
                        {
                           Console.ForegroundColor = ConsoleColor.Red;
@@ -75,20 +96,55 @@ namespace JsonClient
                 }
 
                }
-
         }
 
-        public static Comment GetComment(){
-            string name, email, body;
+        public static async  Task<object> GetObject(object obj){
             
-            Console.WriteLine("write name ");
-            name = Console.ReadLine();
-            Console.WriteLine("write email ");
-            email = Console.ReadLine();
-            Console.WriteLine("write body ");
-            body = Console.ReadLine();
+            Type t = obj.GetType();
+            var nameObj = t.Name;
+            string name, email, body,title, url,thumbnailUrl;
+            int userId,albumId;
+           switch(nameObj){
+            case "Comment":
+                var properties =t.GetProperties();
+                foreach(var pi in properties){
+                    var propertyName = pi.Name;
+                    Console.WriteLine($"write {propertyName}");
+                    var propertyValue = Console.ReadLine();
+                    pi.SetValue(t,propertyValue);
+                }
+                break;
             
-            return new Comment(name, email, body);
+            case "Post":
+                Console.WriteLine("write UserId ");
+                userId = Int32.Parse(Console.ReadLine());
+                Console.WriteLine("write title ");
+                title = Console.ReadLine();
+                Console.WriteLine("write body ");
+                body = Console.ReadLine();
+                
+                break;
+             case "Photo":
+                Console.WriteLine("write AlbumId ");
+                albumId = Int32.Parse(Console.ReadLine());
+                Console.WriteLine("write title ");
+                title = Console.ReadLine();
+                Console.WriteLine("write Url ");
+                url = Console.ReadLine();
+                Console.WriteLine("write thumbnailUrl ");
+                thumbnailUrl = Console.ReadLine();
+                
+                break;
+            case "Album":
+                Console.WriteLine("write UserId ");
+                userId = Int32.Parse(Console.ReadLine());
+                Console.WriteLine("write title ");
+                title = Console.ReadLine();
+                
+                break;    
+           }
+            
+            return null;
         }
 
         public static string GetId(){

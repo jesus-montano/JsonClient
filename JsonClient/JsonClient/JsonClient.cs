@@ -6,7 +6,7 @@ using System.Net.Http.Headers;
 
 namespace JsonClient
 {
-    public class JsonClient<TModel>
+    public class JsonClient<TModel> 
     {
         private HttpClient client;
         private string requestURL;
