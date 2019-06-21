@@ -4,7 +4,9 @@ public class Comment{
     public Comment(){
         
     }
-    public Comment (string name, string email, string body){
+    public Comment (int postId, int id, string name, string email, string body){
+        this.postId =postId;
+        this.id = id;
         this.name = name;
         this.email =email;
         this.body = body;

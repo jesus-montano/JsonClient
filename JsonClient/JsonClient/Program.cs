@@ -8,7 +8,8 @@ namespace JsonClient
         static async Task Main(string[] args)
         {
           // await runClient();
-         await GetObject(new Comment());
+          await GetObject(new Comment());
+
         }
         static async Task runClient(){
             
@@ -102,8 +103,8 @@ namespace JsonClient
             
             Type t = obj.GetType();
             var nameObj = t.Name;
-            string name, email, body,title, url,thumbnailUrl;
-            int userId,albumId;
+            //string name, email, body,title, url,thumbnailUrl;
+            // int userId,albumId;
            switch(nameObj){
             case "Comment":
                 var properties =t.GetProperties();
@@ -111,38 +112,46 @@ namespace JsonClient
                     var propertyName = pi.Name;
                     Console.WriteLine($"write {propertyName}");
                     var propertyValue = Console.ReadLine();
-                    pi.SetValue(t,propertyValue);
+                    var pit = pi.PropertyType;
+                    if (pit == typeof(int)){
+                      pi.SetValue(null,Int32.Parse(propertyValue));
+                    }else{
+                        pi.SetValue(null,propertyValue);
+                    }    
                 }
                 break;
             
-            case "Post":
-                Console.WriteLine("write UserId ");
-                userId = Int32.Parse(Console.ReadLine());
-                Console.WriteLine("write title ");
-                title = Console.ReadLine();
-                Console.WriteLine("write body ");
-                body = Console.ReadLine();
+            // case "Post":
+            //     Console.WriteLine("write UserId ");
+            //     userId = Int32.Parse(Console.ReadLine());
+            //     Console.WriteLine("write title ");
+            //     title = Console.ReadLine();
+            //     Console.WriteLine("write body ");
+            //     body = Console.ReadLine();
                 
+            //     break;
+            //  case "Photo":
+            //     Console.WriteLine("write AlbumId ");
+            //     albumId = Int32.Parse(Console.ReadLine());
+            //     Console.WriteLine("write title ");
+            //     title = Console.ReadLine();
+            //     Console.WriteLine("write Url ");
+            //     url = Console.ReadLine();
+            //     Console.WriteLine("write thumbnailUrl ");
+            //     thumbnailUrl = Console.ReadLine();
+                
+            //     break;
+            // case "Album":
+            //     Console.WriteLine("write UserId ");
+            //     userId = Int32.Parse(Console.ReadLine());
+            //     Console.WriteLine("write title ");
+            //     title = Console.ReadLine();
+                
+            //     break;    
+            default:
                 break;
-             case "Photo":
-                Console.WriteLine("write AlbumId ");
-                albumId = Int32.Parse(Console.ReadLine());
-                Console.WriteLine("write title ");
-                title = Console.ReadLine();
-                Console.WriteLine("write Url ");
-                url = Console.ReadLine();
-                Console.WriteLine("write thumbnailUrl ");
-                thumbnailUrl = Console.ReadLine();
-                
-                break;
-            case "Album":
-                Console.WriteLine("write UserId ");
-                userId = Int32.Parse(Console.ReadLine());
-                Console.WriteLine("write title ");
-                title = Console.ReadLine();
-                
-                break;    
            }
+
             
             return null;
         }
