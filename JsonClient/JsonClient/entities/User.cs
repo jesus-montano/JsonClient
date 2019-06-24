@@ -1,5 +1,5 @@
 public class User{
-    User(){}
+    public User(){}
     User(int id,string name,string username,string email, Address address){
         this.id= id;
         this.name = name;

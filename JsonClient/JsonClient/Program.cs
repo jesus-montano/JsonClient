@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace JsonClient
 {
-    class Program<TObject>
+    class Program
     {
         static async Task Main(string[] args)
         {
@@ -14,7 +14,7 @@ namespace JsonClient
             
             
             int option = 0;
-             while(option < 6){
+             while(option < 7){
                 Console.WriteLine("Select an entity option:\n1 Comments\n2 Post\n3 Album\n4 Photo\n5 Todo\n6 User\n7 exit");
                 option = Int32.Parse(Console.ReadLine());
                 
@@ -22,22 +22,22 @@ namespace JsonClient
                 switch (option)
                 {
                     case 1:
-                       await Crudmenu<Comment>();
+                       await Crudmenu<Comment>(new Comment());
                         break;
                     case 2:
-                       await Crudmenu<Post>();
+                       await Crudmenu<Post>(new Post());
                         break;
                     case 3:
-                       await Crudmenu<Album>();
+                       await Crudmenu<Album>(new Album());
                         break;
                     case 4:
-                       await Crudmenu<Photo>();
+                       await Crudmenu<Photo>(new Photo());
                         break;
                     case 5:
-                       await Crudmenu<Todo>();
+                       await Crudmenu<Todo>(new Todo());
                         break;
                     case 6:
-                       await Crudmenu<User>();
+                      await Crudmenu<User>(new User());
                         break;
                     case 7:
                         Console.WriteLine("bye");
@@ -48,7 +48,7 @@ namespace JsonClient
                
 
         }
-        static async  Task Crudmenu<TObject>(){
+        static async  Task Crudmenu<TObject>(TObject obj){
             var client = new JsonClient<TObject>();
             int option = 0;
             var result =default(TObject);
@@ -88,7 +88,7 @@ namespace JsonClient
 
                         break;
                     case 3:
-                       result = await client.PostAsync( GetObject());
+                       result = await client.PostAsync( GetObject<TObject>(obj));
                        if(result != null){
                            printObject(result);
                        }else
@@ -99,7 +99,7 @@ namespace JsonClient
                        }
                         break;
                     case 4:
-                       result = await client.UpdateAsync( GetId(), GetObject());
+                       result = await client.UpdateAsync( GetId(), GetObject<TObject>(obj));
                        if(result != null){
                            printObject(result);
                        }else
@@ -127,7 +127,7 @@ namespace JsonClient
                     Console.WriteLine($"{propertyName}: {propertyValue}\n");
                 }
         } 
-        public static async  Task<object> GetObject(object obj){
+        public static TObject GetObject<TObject>(TObject obj){
             
             Type t = obj.GetType();
                 var properties =t.GetProperties();
