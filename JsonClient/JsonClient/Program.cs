@@ -3,20 +3,19 @@ using System.Threading.Tasks;
 
 namespace JsonClient
 {
-    class Program
+    class Program<TObject>
     {
         static async Task Main(string[] args)
         {
-          // await runClient();
-          await GetObject(new Comment());
-
+           await runClient();
         }
+
         static async Task runClient(){
             
             
             int option = 0;
              while(option < 6){
-                Console.WriteLine("Select an option:\n 1 Comments\n 2 Post\n 3 Create new Comment\n 4 Update Comment\n 5 exit");
+                Console.WriteLine("Select an entity option:\n1 Comments\n2 Post\n3 Album\n4 Photo\n5 Todo\n6 User\n7 exit");
                 option = Int32.Parse(Console.ReadLine());
                 
 
@@ -25,6 +24,24 @@ namespace JsonClient
                     case 1:
                        await Crudmenu<Comment>();
                         break;
+                    case 2:
+                       await Crudmenu<Post>();
+                        break;
+                    case 3:
+                       await Crudmenu<Album>();
+                        break;
+                    case 4:
+                       await Crudmenu<Photo>();
+                        break;
+                    case 5:
+                       await Crudmenu<Todo>();
+                        break;
+                    case 6:
+                       await Crudmenu<User>();
+                        break;
+                    case 7:
+                        Console.WriteLine("bye");
+                        break;        
                 }
              }
 
@@ -34,21 +51,22 @@ namespace JsonClient
         static async  Task Crudmenu<TObject>(){
             var client = new JsonClient<TObject>();
             int option = 0;
-            var comment =default(TObject);
-            while(option < 5){
-                Console.WriteLine("Select an option:\n"+ 
-                "1 Get all\n 2 GetById\n 3 Create new Comment\n 4 Update Comment\n 5 exit");
+            var result =default(TObject);
+            
+            while(option < 4){
+                Console.WriteLine("Select an CRUD option:\n"+ 
+                "1 Get all\n2 GetById\n3 Create new\n4 Update\n5 exit");
                 option = Int32.Parse(Console.ReadLine());
                 
 
                 switch (option)
                 {
                     case 1:
-                       var comments = await client.GetAsync();
-                       if(comments != null)
+                       var results = await client.GetAsync();
+                       if(results != null)
                        {
-                        foreach(TObject comm in comments){
-                               // Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}\n", comm.name, comm.email, comm.body);
+                        foreach(TObject res in results){
+                               printObject(res);
                             }
                        }else
                        {
@@ -58,9 +76,9 @@ namespace JsonClient
                        }
                         break;
                     case 2:
-                        comment = await client.GetAsync(GetId());
-                        if(comment != null){
-                        //Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}", comment.name, comment.email, comment.body);
+                        result = await client.GetAsync(GetId());
+                        if(result != null){
+                            printObject(result);
                         }else
                         {
                             Console.ForegroundColor = ConsoleColor.Red;
@@ -70,9 +88,9 @@ namespace JsonClient
 
                         break;
                     case 3:
-                       //comment = await client.PostAsync( GetComment());
-                       if(comment != null){
-                       //Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}", comment.name, comment.email, comment.body);
+                       result = await client.PostAsync( GetObject());
+                       if(result != null){
+                           printObject(result);
                        }else
                        {
                           Console.ForegroundColor = ConsoleColor.Red;
@@ -81,9 +99,9 @@ namespace JsonClient
                        }
                         break;
                     case 4:
-                       //comment = await client.UpdateAsync( GetId(), GetComment());
-                       if(comment != null){
-                       //Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}", comment.name, comment.email, comment.body);
+                       result = await client.UpdateAsync( GetId(), GetObject());
+                       if(result != null){
+                           printObject(result);
                        }else
                        {
                           Console.ForegroundColor = ConsoleColor.Red;
@@ -95,18 +113,23 @@ namespace JsonClient
                         Console.WriteLine("Default case");
                         break;
                 }
+                break;
 
                }
         }
 
+        public static void printObject(object obj){
+                Type t = obj.GetType();
+                var properties =t.GetProperties();
+                foreach(var pi in properties){
+                    var propertyName = pi.Name;
+                    var propertyValue = pi.GetValue(obj);
+                    Console.WriteLine($"{propertyName}: {propertyValue}\n");
+                }
+        } 
         public static async  Task<object> GetObject(object obj){
             
             Type t = obj.GetType();
-            var nameObj = t.Name;
-            //string name, email, body,title, url,thumbnailUrl;
-            // int userId,albumId;
-           switch(nameObj){
-            case "Comment":
                 var properties =t.GetProperties();
                 foreach(var pi in properties){
                     var propertyName = pi.Name;
@@ -114,48 +137,13 @@ namespace JsonClient
                     var propertyValue = Console.ReadLine();
                     var pit = pi.PropertyType;
                     if (pit == typeof(int)){
-                      pi.SetValue(null,Int32.Parse(propertyValue));
+                      pi.SetValue(obj,Int32.Parse(propertyValue));
                     }else{
-                        pi.SetValue(null,propertyValue);
+                        pi.SetValue(obj,propertyValue);
                     }    
                 }
-                break;
-            
-            // case "Post":
-            //     Console.WriteLine("write UserId ");
-            //     userId = Int32.Parse(Console.ReadLine());
-            //     Console.WriteLine("write title ");
-            //     title = Console.ReadLine();
-            //     Console.WriteLine("write body ");
-            //     body = Console.ReadLine();
-                
-            //     break;
-            //  case "Photo":
-            //     Console.WriteLine("write AlbumId ");
-            //     albumId = Int32.Parse(Console.ReadLine());
-            //     Console.WriteLine("write title ");
-            //     title = Console.ReadLine();
-            //     Console.WriteLine("write Url ");
-            //     url = Console.ReadLine();
-            //     Console.WriteLine("write thumbnailUrl ");
-            //     thumbnailUrl = Console.ReadLine();
-                
-            //     break;
-            // case "Album":
-            //     Console.WriteLine("write UserId ");
-            //     userId = Int32.Parse(Console.ReadLine());
-            //     Console.WriteLine("write title ");
-            //     title = Console.ReadLine();
-                
-            //     break;    
-            default:
-                break;
-           }
-
-            
-            return null;
+            return obj;
         }
-
         public static string GetId(){
             string id;
             Console.WriteLine("Write id");

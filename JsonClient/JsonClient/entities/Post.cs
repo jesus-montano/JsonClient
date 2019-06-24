@@ -3,8 +3,9 @@ public class Post{
     public Post(){
 
     }
-    public Post(int userId, string title, string body){
+    public Post(int userId, int id, string title, string body){
         this.userId =userId;
+        this.id = id;
         this.title =title;
         this.body =body;
     }

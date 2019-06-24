@@ -3,9 +3,10 @@ public class Album{
 
     }
 
-    public Album (int userId, string title){
+    public Album (int userId, int id, string title){
 
     this.userId = userId;
+    this.id =id;
     this.title = title;
     }
     public int userId {get; set;}

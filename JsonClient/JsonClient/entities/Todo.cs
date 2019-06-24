@@ -3,8 +3,9 @@ public class Todo{
     public Todo(){
 
     }
-    public Todo(int userId, string title, bool completed){
+    public Todo(int userId, int id, string title, bool completed){
         this.userId = userId;
+        this.id = id;
         this.title = title;
         this.completed = completed;
 
