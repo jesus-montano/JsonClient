@@ -3,15 +3,15 @@ public class Post{
     public Post(){
 
     }
-    public Post(int userId, int id, string title, string body){
-        this.userId =userId;
-        this.id = id;
-        this.title =title;
-        this.body =body;
+    public Post(int UserId, int Id, string Title, string Body){
+        this.UserId =UserId;
+        this.Id = Id;
+        this.Title =Title;
+        this.Body =Body;
     }
-    public int userId {get; set;}
-    public int id {get; set;}
-    public string title {get; set;}
-    public string body {get; set;}
+    public int UserId {get; set;}
+    public int Id {get; set;}
+    public string Title {get; set;}
+    public string Body {get; set;}
 
 }

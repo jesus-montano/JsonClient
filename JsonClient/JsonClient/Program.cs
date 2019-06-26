@@ -66,7 +66,7 @@ namespace JsonClient
                        if(results != null)
                        {
                         foreach(TObject res in results){
-                               printObject(res);
+                               PrintObject(res);
                             }
                        }else
                        {
@@ -78,7 +78,7 @@ namespace JsonClient
                     case 2:
                         result = await client.GetAsync(GetId());
                         if(result != null){
-                            printObject(result);
+                            PrintObject(result);
                         }else
                         {
                             Console.ForegroundColor = ConsoleColor.Red;
@@ -90,7 +90,7 @@ namespace JsonClient
                     case 3:
                        result = await client.PostAsync( GetObject<TObject>(obj));
                        if(result != null){
-                           printObject(result);
+                           PrintObject(result);
                        }else
                        {
                           Console.ForegroundColor = ConsoleColor.Red;
@@ -101,7 +101,7 @@ namespace JsonClient
                     case 4:
                        result = await client.UpdateAsync( GetId(), GetObject<TObject>(obj));
                        if(result != null){
-                           printObject(result);
+                           PrintObject(result);
                        }else
                        {
                           Console.ForegroundColor = ConsoleColor.Red;
@@ -118,13 +118,15 @@ namespace JsonClient
                }
         }
 
-        public static void printObject(object obj){
+        public static void PrintObject(object obj){
                 Type t = obj.GetType();
                 var properties =t.GetProperties();
+                
                 foreach(var pi in properties){
                     var propertyName = pi.Name;
                     var propertyValue = pi.GetValue(obj);
                     Console.WriteLine($"{propertyName}: {propertyValue}\n");
+                    
                 }
         } 
         public static TObject GetObject<TObject>(TObject obj){
@@ -132,14 +134,22 @@ namespace JsonClient
             Type t = obj.GetType();
                 var properties =t.GetProperties();
                 foreach(var pi in properties){
-                    var propertyName = pi.Name;
-                    Console.WriteLine($"write {propertyName}");
-                    var propertyValue = Console.ReadLine();
-                    var pit = pi.PropertyType;
-                    if (pit == typeof(int)){
-                      pi.SetValue(obj,Int32.Parse(propertyValue));
-                    }else{
-                        pi.SetValue(obj,propertyValue);
+                    if(Attribute.IsDefined(pi,typeof(IsClass))){
+                       var instanceComplexObj = Activator.CreateInstance(pi.PropertyType);
+                       var complexObj = GetObject(instanceComplexObj);
+                       pi.SetValue(obj,complexObj);
+                    }else{ 
+                        var propertyName = pi.Name;
+                        Console.WriteLine($"write {propertyName}");
+                        var propertyValue = Console.ReadLine();
+                        var pit = pi.PropertyType;
+                        if (pit == typeof(int)){
+                        pi.SetValue(obj,Int32.Parse(propertyValue));
+                        }else if(pit == typeof(decimal)){
+                            pi.SetValue(obj,Decimal.Parse(propertyValue));
+                        }else{
+                            pi.SetValue(obj, propertyValue);
+                        }
                     }    
                 }
             return obj;
