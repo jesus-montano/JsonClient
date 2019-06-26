@@ -7,7 +7,9 @@ public class Photo{
         this.Url = Url;
         this.ThumbnailUrl =ThumbnailUrl;
     }
+    [Skip]
     public int AlbumId;
+    [Skip]
     public int Id;    
     public string Title;
     public string Url;

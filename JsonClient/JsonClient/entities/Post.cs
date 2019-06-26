@@ -9,7 +9,9 @@ public class Post{
         this.Title =Title;
         this.Body =Body;
     }
+    [Skip]
     public int UserId {get; set;}
+    [Skip]
     public int Id {get; set;}
     public string Title {get; set;}
     public string Body {get; set;}

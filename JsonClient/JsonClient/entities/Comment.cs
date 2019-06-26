@@ -11,7 +11,9 @@ public class Comment{
         this.Email =Email;
         this.Body = Body;
     }
+    [Skip]
     public int PostId {get; set;}
+    [Skip]
     public int Id {get; set;}
             
     public string Name {get; set;}

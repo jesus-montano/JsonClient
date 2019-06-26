@@ -10,7 +10,9 @@ public class Todo{
         this.Completed = Completed;
 
     }
+    [Skip]
     public int UserId;
+    [Skip]
     public int Id;
     public string Title;
     public bool Completed;

@@ -1,4 +1,4 @@
 public class IsClass : System.Attribute{
-        public string msg {get; set;}
-        
-    }
+
+}
+public class Skip : System.Attribute{}

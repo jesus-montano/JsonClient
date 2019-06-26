@@ -136,23 +136,25 @@ namespace JsonClient
             Type t = obj.GetType();
                 var properties =t.GetProperties();
                 foreach(var pi in properties){
-                    if(Attribute.IsDefined(pi,typeof(IsClass))){
-                       var instanceComplexObj = Activator.CreateInstance(pi.PropertyType);
-                       var complexObj = GetObject(instanceComplexObj);
-                       pi.SetValue(obj,complexObj);
-                    }else{ 
-                        var propertyName = pi.Name;
-                        Console.WriteLine($"write {propertyName}");
-                        var propertyValue = Console.ReadLine();
-                        var pit = pi.PropertyType;
-                        if (pit == typeof(int)){
-                        pi.SetValue(obj,Int32.Parse(propertyValue));
-                        }else if(pit == typeof(decimal)){
-                            pi.SetValue(obj,Decimal.Parse(propertyValue));
+                    if(!Attribute.IsDefined(pi,typeof(Skip))){
+                        if(Attribute.IsDefined(pi,typeof(IsClass))){
+                        var instanceComplexObj = Activator.CreateInstance(pi.PropertyType);
+                        var complexObj = GetObject(instanceComplexObj);
+                        pi.SetValue(obj,complexObj);
                         }else{
-                            pi.SetValue(obj, propertyValue);
+                            var propertyName = pi.Name;
+                            Console.WriteLine($"write {propertyName}");
+                            var propertyValue = Console.ReadLine();
+                            var pit = pi.PropertyType;
+                            if (pit == typeof(int)){
+                            pi.SetValue(obj,Int32.Parse(propertyValue));
+                            }else if(pit == typeof(decimal)){
+                                pi.SetValue(obj,Decimal.Parse(propertyValue));
+                            }else{
+                                pi.SetValue(obj, propertyValue);
+                            }
                         }
-                    }    
+                    }
                 }
             return obj;
         }
