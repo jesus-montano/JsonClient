@@ -121,12 +121,14 @@ namespace JsonClient
         public static void PrintObject(object obj){
                 Type t = obj.GetType();
                 var properties =t.GetProperties();
-                
                 foreach(var pi in properties){
-                    var propertyName = pi.Name;
-                    var propertyValue = pi.GetValue(obj);
-                    Console.WriteLine($"{propertyName}: {propertyValue}\n");
-                    
+                    if(Attribute.IsDefined(pi,typeof(IsClass))){
+                      PrintObject(pi.GetValue(obj));
+                    }else{
+                        var propertyName = pi.Name;
+                        var propertyValue = pi.GetValue(obj);
+                        Console.WriteLine($"{propertyName}: {propertyValue}\n");
+                    }
                 }
         } 
         public static TObject GetObject<TObject>(TObject obj){
