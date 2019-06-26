@@ -3,12 +3,14 @@ public class Album{
 
     }
 
-    public Album (int userId, string title){
-
-    this.userId = userId;
-    this.title = title;
+    public Album (int UserId, int Id, string Title){
+        this.UserId = UserId;
+        this.Id =Id;
+        this.Title = Title;
     }
-    public int userId {get; set;}
-    public int id {get; set;}
-    public string title {get; set;}
+    [Skip]
+    public int UserId {get; set;}
+    [Skip]
+    public int Id {get; set;}
+    public string Title {get; set;}
 }

@@ -3,14 +3,17 @@ public class Todo{
     public Todo(){
 
     }
-    public Todo(int userId, string title, bool completed){
-        this.userId = userId;
-        this.title = title;
-        this.completed = completed;
+    public Todo(int UserId, int Id, string Title, bool Completed){
+        this.UserId = UserId;
+        this.Id = Id;
+        this.Title = Title;
+        this.Completed = Completed;
 
     }
-    public int userId;
-    public int id;
-    public string title;
-    public bool completed;
+    [Skip]
+    public int UserId;
+    [Skip]
+    public int Id;
+    public string Title;
+    public bool Completed;
 }

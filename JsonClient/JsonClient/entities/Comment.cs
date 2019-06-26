@@ -4,18 +4,22 @@ public class Comment{
     public Comment(){
         
     }
-    public Comment (string name, string email, string body){
-        this.name = name;
-        this.email =email;
-        this.body = body;
+    public Comment (int PostId, int Id, string Name, string Email, string Body){
+        this.PostId =PostId;
+        this.Id = Id;
+        this.Name = Name;
+        this.Email =Email;
+        this.Body = Body;
     }
-    public int postId {get; set;}
-    public int id {get; set;}
+    [Skip]
+    public int PostId {get; set;}
+    [Skip]
+    public int Id {get; set;}
             
-    public string name {get; set;}
+    public string Name {get; set;}
 
-    public string email {get; set;}
+    public string Email {get; set;}
         
-    public string body {get; set;}
+    public string Body {get; set;}
     
 }

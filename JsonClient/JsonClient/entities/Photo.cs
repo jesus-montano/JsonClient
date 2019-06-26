@@ -1,14 +1,17 @@
 public class Photo{
-
-    public Photo(int albumId,string title, string url, string thumbnailUrl ){
-        this.albumId = albumId;
-        this.title = title;
-        this.url = url;
-        this.thumbnailUrl =thumbnailUrl;
+    public Photo(){}
+    public Photo(int AlbumId,int Id,string Title, string Url, string ThumbnailUrl ){
+        this.AlbumId = AlbumId;
+        this.Id =Id;
+        this.Title = Title;
+        this.Url = Url;
+        this.ThumbnailUrl =ThumbnailUrl;
     }
-    public int albumId;
-    public int id;    
-    public string title;
-    public string url;
-    public string thumbnailUrl;
+    [Skip]
+    public int AlbumId;
+    [Skip]
+    public int Id;    
+    public string Title;
+    public string Url;
+    public string ThumbnailUrl;
 }
