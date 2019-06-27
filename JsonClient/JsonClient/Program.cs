@@ -77,9 +77,7 @@ namespace JsonClient
                        }
                        else
                        {
-                           Console.ForegroundColor = ConsoleColor.Red;
-                           Console.WriteLine("not found");
-                           Console.ResetColor();
+                           ErrorManagement("get");
                        }
                         break;
                     case 2:
@@ -90,9 +88,7 @@ namespace JsonClient
                         }
                         else
                         {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine("not found");
-                            Console.ResetColor();
+                          ErrorManagement("get");
                         }
 
                         break;
@@ -104,9 +100,7 @@ namespace JsonClient
                        }
                        else
                        {
-                          Console.ForegroundColor = ConsoleColor.Red;
-                          Console.WriteLine("error while Saved");
-                          Console.ResetColor();
+                          ErrorManagement("post");
                        }
                         break;
                     case 4:
@@ -117,9 +111,7 @@ namespace JsonClient
                        }
                        else
                        {
-                          Console.ForegroundColor = ConsoleColor.Red;
-                          Console.WriteLine("error while updated");
-                          Console.ResetColor();
+                          ErrorManagement("update");
                        }
                         break;        
                     default:
@@ -129,6 +121,25 @@ namespace JsonClient
                 break;
 
             }
+        }
+
+        public static void ErrorManagement(string method){
+            Console.ForegroundColor = ConsoleColor.Red;
+            switch(method){
+                case "get":
+                    Console.WriteLine("not found\n");
+                    break;
+                case "post":
+                    Console.WriteLine("error while Saved\n");
+                    break;
+                case "update":
+                    Console.WriteLine("error while updated\n");
+                    break;
+                default:
+                    break;
+            }
+            Console.ResetColor();
+
         }
 
         public static void PrintObject(object obj)
