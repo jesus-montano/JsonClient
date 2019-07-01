@@ -2,7 +2,7 @@ using JsonClient.Attributes;
 namespace JsonClient.Entities
 {
     
-    public class Photo
+    public class Photo : AbstractManageObject
     {
 
         [Skip]

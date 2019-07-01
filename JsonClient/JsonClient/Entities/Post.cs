@@ -2,7 +2,7 @@ using JsonClient.Attributes;
 using System.ComponentModel.DataAnnotations;
 namespace JsonClient.Entities
 {
-    public class Post
+    public class Post : AbstractManageObject
     {
         
         [Skip]

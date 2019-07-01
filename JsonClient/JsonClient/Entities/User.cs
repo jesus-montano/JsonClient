@@ -2,7 +2,7 @@ using JsonClient.Attributes;
 namespace JsonClient.Entities
 {
 
-    public class User
+    public class User : AbstractManageObject
     {
 
         [Skip]

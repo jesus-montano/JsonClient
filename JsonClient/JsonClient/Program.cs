@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using JsonClient.Entities;
 using JsonClient.Attributes;
 using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
+using System.Reflection;
 namespace JsonClient
 {
     class Program
@@ -10,6 +12,7 @@ namespace JsonClient
         static async Task Main(string[] args)
         {
            await runClient();
+
         }
 
         static async Task runClient()
@@ -69,50 +72,19 @@ namespace JsonClient
                 {
                     case 1:
                        var results = await client.GetAsync();
-                       if(results != null)
-                       {
-                        foreach(TObject res in results){
-                               PrintObject(res);
-                        }
-                       }
-                       else
-                       {
-                           ErrorManagement("get");
-                       }
+                       ManageResult(results,"get");
                         break;
                     case 2:
                         result = await client.GetAsync(GetId());
-                        if(result != null)
-                        {
-                            PrintObject(result);
-                        }
-                        else
-                        {
-                          ErrorManagement("get");
-                        }
-
+                        ManageResult(result, "get");
                         break;
                     case 3:
                        result = await client.PostAsync( BuildObjectByConsole<TObject>(obj));
-                       if(result != null)
-                       {
-                           PrintObject(result);
-                       }
-                       else
-                       {
-                          ErrorManagement("post");
-                       }
+                       ManageResult(result, "post");
                         break;
                     case 4:
                        result = await client.UpdateAsync( GetId(), BuildObjectByConsole<TObject>(obj));
-                       if(result != null)
-                       {
-                           PrintObject(result);
-                       }
-                       else
-                       {
-                          ErrorManagement("update");
-                       }
+                       ManageResult(result, "update");
                         break;        
                     default:
                         Console.WriteLine("Default case");
@@ -121,6 +93,21 @@ namespace JsonClient
                 break;
 
             }
+        }
+
+        public static void ManageResult(object result, string NameMethod){
+            if(result != null)
+                Console.WriteLine(result.ToString());
+            else
+                ErrorManagement(NameMethod);
+        }
+        public static void ManageResult<TObject>(IEnumerable<TObject> result, string NameMethod) {
+        if(result!=null){
+            foreach(var obj in result){
+                Console.WriteLine(obj.ToString());
+            }
+        }else
+            ErrorManagement(NameMethod);
         }
 
         public static void ErrorManagement(string method){
@@ -142,71 +129,39 @@ namespace JsonClient
 
         }
 
-        public static void PrintObject(object obj)
+    public static TObject BuildObjectByConsole<TObject>(TObject obj)
         {
-                Type t = obj.GetType();
-                var properties =t.GetProperties();
-                foreach(var pi in properties)
+        Type t = obj.GetType();
+            var properties =t.GetProperties();
+            foreach(var pi in properties)
+            {
+                if(!Attribute.IsDefined(pi,typeof(SkipAttribute)))
                 {
                     if(Attribute.IsDefined(pi,typeof(IsClassAttribute)))
                     {
-                      PrintObject(pi.GetValue(obj));
+                    var instanceComplexObj = Activator.CreateInstance(pi.PropertyType);
+                    var complexObj = BuildObjectByConsole(instanceComplexObj);
+                    pi.SetValue(obj,complexObj);
                     }
                     else
                     {
-                        if(Attribute.IsDefined(pi,typeof(DisplayAttribute)))
-                        {
-                            //need access to Display Name
-                           Console.WriteLine($"{pi.Name}: {pi.GetValue(obj)}\n");
-                        }
-                        else
-                        {
-                            Console.WriteLine($"{pi.Name}: {pi.GetValue(obj)}\n");
-                        }
+                        string propertyValue = ObtainValueOfUser(pi.Name);
+                        var pit = pi.PropertyType;
+                        pi.SetValue(obj, ParseValueToTheCorrect(pit, propertyValue));
+
                     }
                 }
-        } 
-
-        public static TObject BuildObjectByConsole<TObject>(TObject obj)
-        {
-            
-            Type t = obj.GetType();
-                var properties =t.GetProperties();
-                foreach(var pi in properties)
-                {
-                    if(!Attribute.IsDefined(pi,typeof(SkipAttribute)))
-                    {
-                        if(Attribute.IsDefined(pi,typeof(IsClassAttribute)))
-                        {
-                        var instanceComplexObj = Activator.CreateInstance(pi.PropertyType);
-                        var complexObj = BuildObjectByConsole(instanceComplexObj);
-                        pi.SetValue(obj,complexObj);
-                        }
-                        else
-                        {
-                            string propertyValue = ObtainValueOfUser(pi.Name);
-                            var pit = pi.PropertyType;
-                            pi.SetValue(obj, ParseValueToTheCorrect(pit, propertyValue));
-
-                        }
-                    }
-                }
-            return obj;
+            }
+        return obj;
         }
-
         public static object ParseValueToTheCorrect(object pit, string val){
 
             if ((Type)pit == typeof(int))
-            {
                 return Int32.Parse(val);
-            }
             else if ((Type)pit == typeof(decimal))
-            {
                 return Decimal.Parse(val);
-            }else
-            {
+            else
                 return val;
-            }
         }
 
         public static string ObtainValueOfUser(string name){

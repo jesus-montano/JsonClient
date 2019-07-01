@@ -2,7 +2,7 @@ using JsonClient.Attributes;
 using System.ComponentModel.DataAnnotations;
 namespace JsonClient.Entities
 {
-    public class Address
+    public class Address : AbstractManageObject
     {
         public string street {get; set;}
 

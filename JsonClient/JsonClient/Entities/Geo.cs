@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 namespace JsonClient.Entities{
-    public class Geo
+    public class Geo : AbstractManageObject
     {
 
         [Display(Name = "latitude")]

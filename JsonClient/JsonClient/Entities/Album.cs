@@ -3,7 +3,7 @@ using JsonClient.Attributes;
 namespace JsonClient.Entities
 {
         
-    public class Album
+    public class Album : AbstractManageObject
     {
         [Skip]
         public int UserId {get; set;}

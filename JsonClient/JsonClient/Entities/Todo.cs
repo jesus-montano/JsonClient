@@ -1,7 +1,7 @@
 using JsonClient.Attributes;
 namespace JsonClient.Entities
 {
-    public class Todo
+    public class Todo : AbstractManageObject
     {
         
         [Skip]
