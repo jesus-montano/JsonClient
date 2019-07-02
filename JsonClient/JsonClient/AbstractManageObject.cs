@@ -6,17 +6,17 @@ namespace JsonClient
   {
     public override string ToString()
     {
-      string ObjectString= "";
+      string objectString= "";
       Type t = this.GetType();
                 var properties =t.GetProperties();
                 foreach(var pi in properties)
                 {
                     if(Attribute.IsDefined(pi,typeof(IsClassAttribute)))
-                      pi.GetValue(this).ToString();
+                      objectString += pi.GetValue(this).ToString();
                     else
-                     ObjectString+=(($"{pi.GetDisplayName()}: {pi.GetValue(this)}\n\n"));   
+                     objectString +=(($"{pi.GetDisplayName()}: {pi.GetValue(this)}\n\n"));
                 }
-                return ObjectString;
+                return objectString;
     }
   
     

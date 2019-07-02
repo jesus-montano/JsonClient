@@ -9,6 +9,7 @@ namespace JsonClient
 {
     class Program
     {
+        enum method {get = 1, post = 2, put = 3};
         static async Task Main(string[] args)
         {
            await runClient();
@@ -23,7 +24,7 @@ namespace JsonClient
              while(option < 7)
              {
                 Console.WriteLine("Select an entity option:\n1 Comments\n2 Post\n3 Album\n4 Photo\n5 Todo\n6 User\n7 exit");
-                option = Int32.Parse(Console.ReadLine());
+                int.TryParse(Console.ReadLine(), out option);
                 
 
                 switch (option)
@@ -51,40 +52,37 @@ namespace JsonClient
                         break;        
                 }
              }
-
-               
-
         }
         static async  Task Crudmenu<TObject>(TObject obj)
         {
             var client = new JsonClient<TObject>();
             int option = 0;
             var result =default(TObject);
-            
+
             while(option < 4)
             {
                 Console.WriteLine("Select an CRUD option:\n"+ 
                 "1 Get all\n2 GetById\n3 Create new\n4 Update\n5 exit");
-                option = Int32.Parse(Console.ReadLine());
-                
+
+                int.TryParse(Console.ReadLine(), out option);
 
                 switch (option)
                 {
                     case 1:
                        var results = await client.GetAsync();
-                       ManageResult(results,"get");
+                       ManageResult(results, (int)method.get);
                         break;
                     case 2:
                         result = await client.GetAsync(GetId());
-                        ManageResult(result, "get");
+                        ManageResult(result, (int)method.get);
                         break;
                     case 3:
                        result = await client.PostAsync( BuildObjectByConsole<TObject>(obj));
-                       ManageResult(result, "post");
+                       ManageResult(result, (int)method.post);
                         break;
                     case 4:
                        result = await client.UpdateAsync( GetId(), BuildObjectByConsole<TObject>(obj));
-                       ManageResult(result, "update");
+                       ManageResult(result, (int)method.put);
                         break;        
                     default:
                         Console.WriteLine("Default case");
@@ -95,13 +93,13 @@ namespace JsonClient
             }
         }
 
-        public static void ManageResult(object result, string NameMethod){
+        public static void ManageResult(object result, int NameMethod){
             if(result != null)
                 Console.WriteLine(result.ToString());
             else
                 ErrorManagement(NameMethod);
         }
-        public static void ManageResult<TObject>(IEnumerable<TObject> result, string NameMethod) {
+        public static void ManageResult<TObject>(IEnumerable<TObject> result, int NameMethod) {
         if(result!=null){
             foreach(var obj in result){
                 Console.WriteLine(obj.ToString());
@@ -110,16 +108,16 @@ namespace JsonClient
             ErrorManagement(NameMethod);
         }
 
-        public static void ErrorManagement(string method){
+        public static void ErrorManagement(int method){
             Console.ForegroundColor = ConsoleColor.Red;
             switch(method){
-                case "get":
+                case 1:
                     Console.WriteLine("not found\n");
                     break;
-                case "post":
+                case 2:
                     Console.WriteLine("error while Saved\n");
                     break;
-                case "update":
+                case 3:
                     Console.WriteLine("error while updated\n");
                     break;
                 default:
@@ -148,17 +146,16 @@ namespace JsonClient
                         string propertyValue = ObtainValueOfUser(pi.Name);
                         var pit = pi.PropertyType;
                         pi.SetValue(obj, ParseValueToTheCorrect(pit, propertyValue));
-
                     }
                 }
             }
         return obj;
         }
-        public static object ParseValueToTheCorrect(object pit, string val){
+        public static object ParseValueToTheCorrect(Type pit, string val){
 
-            if ((Type)pit == typeof(int))
+            if (pit == typeof(int))
                 return Int32.Parse(val);
-            else if ((Type)pit == typeof(decimal))
+            else if (pit == typeof(decimal))
                 return Decimal.Parse(val);
             else
                 return val;

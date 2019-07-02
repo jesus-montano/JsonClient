@@ -27,8 +27,6 @@ namespace JsonClient.Entities
             this.Name = Name;
             this.Email =Email;
             this.Body = Body;
-        }
-        
-        
+        }     
     }
 }
