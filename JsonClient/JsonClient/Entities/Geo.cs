@@ -1,12 +1,13 @@
 using System.ComponentModel.DataAnnotations;
-namespace JsonClient.Entities{
-    public class Geo : AbstractManageObject
-    {
 
-        [Display(Name = "latitude")]
-        public decimal lat {get; set;}
-        
+namespace JsonClient.Entities
+{
+    public class Geo : EntityBase
+    {
+        [Display(Name = "Latitude")]
+        public decimal Latitude { get; set; }
+
         [Display(Name = "Longitude")]
-        public decimal lng {get; set;}
+        public decimal Longitude { get; set; }
     }
 }

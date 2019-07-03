@@ -1,32 +1,21 @@
 using JsonClient.Attributes;
 using System.ComponentModel.DataAnnotations;
+
 namespace JsonClient.Entities
 {
-    public class Comment : AbstractManageObject
+    public class Comment : EntityBase
     {
-        
         [Skip]
-        public int PostId {get; set;}
-        
+        public int PostId { get; set; }
+
         [Skip]
-        public int Id {get; set;}
-                
-        public string Name {get; set;}
+        public int Id { get; set; }
 
-        public string Email {get; set;}
-            
-        [Display (Name = "Content")]
-        public string Body {get; set;}
+        public string Name { get; set; }
 
-        public Comment(){ }
+        public string Email { get; set; }
 
-        public Comment (int PostId, int Id, string Name, string Email, string Body)
-        {
-            this.PostId =PostId;
-            this.Id = Id;
-            this.Name = Name;
-            this.Email =Email;
-            this.Body = Body;
-        }     
+        [Display(Name = "Content")]
+        public string Body { get; set; }
     }
 }
