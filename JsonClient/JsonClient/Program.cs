@@ -9,97 +9,112 @@ namespace JsonClient
 {
     class Program
     {
-        enum method {get = 1, post = 2, put = 3};
+        
         static async Task Main(string[] args)
         {
            await runClient();
+           
 
         }
 
         static async Task runClient()
-        {
+        {   
             
-            
-            int option = 0;
-             while(option < 7)
-             {
-                Console.WriteLine("Select an entity option:\n1 Comments\n2 Post\n3 Album\n4 Photo\n5 Todo\n6 User\n7 exit");
-                int.TryParse(Console.ReadLine(), out option);
+            EnumEntities? option = null;
+            do 
+            {
+                Console.WriteLine("Select an Entity option:\n"+BuildString(typeof(EnumEntities)));
+                if(int.TryParse(Console.ReadLine(),out int  opt))
+                    option =(EnumEntities) opt;
                 
-
                 switch (option)
                 {
-                    case 1:
+                    case EnumEntities.Comments:
                        await Crudmenu<Comment>(new Comment());
                         break;
-                    case 2:
+                    case EnumEntities.Post:
                        await Crudmenu<Post>(new Post());
                         break;
-                    case 3:
+                    case EnumEntities.Album:
                        await Crudmenu<Album>(new Album());
                         break;
-                    case 4:
+                    case EnumEntities.Photo:
                        await Crudmenu<Photo>(new Photo());
                         break;
-                    case 5:
+                    case EnumEntities.Todo:
                        await Crudmenu<Todo>(new Todo());
                         break;
-                    case 6:
+                    case EnumEntities.User:
                       await Crudmenu<User>(new User());
                         break;
-                    case 7:
+                    case EnumEntities.Exit:
                         Console.WriteLine("bye");
-                        break;        
+                        break;  
+                    default:
+                        option = EnumEntities.Exit;     
+                        break;     
                 }
-             }
+            } while(option != null && option != EnumEntities.Exit);
         }
         static async  Task Crudmenu<TObject>(TObject obj)
         {
             var client = new JsonClient<TObject>();
-            int option = 0;
+            EnumCrud? option = null;
             var result =default(TObject);
 
-            while(option < 4)
+            do
             {
-                Console.WriteLine("Select an CRUD option:\n"+ 
-                "1 Get all\n2 GetById\n3 Create new\n4 Update\n5 exit");
+                Console.WriteLine("Select an action:\n"+BuildString(typeof(EnumCrud)));
 
-                int.TryParse(Console.ReadLine(), out option);
+                if(int.TryParse(Console.ReadLine(),out int  opt))
+                    option =(EnumCrud) opt;
 
                 switch (option)
                 {
-                    case 1:
+                    case EnumCrud.Get:
                        var results = await client.GetAsync();
-                       ManageResult(results, (int)method.get);
+                       ManageResult(results, Method.Get);
                         break;
-                    case 2:
+                    case EnumCrud.GetById:
                         result = await client.GetAsync(GetId());
-                        ManageResult(result, (int)method.get);
+                        ManageResult(result, Method.Get);
                         break;
-                    case 3:
+                    case EnumCrud.Post:
                        result = await client.PostAsync( BuildObjectByConsole<TObject>(obj));
-                       ManageResult(result, (int)method.post);
+                       ManageResult(result, Method.Post);
                         break;
-                    case 4:
+                    case EnumCrud.Put:
                        result = await client.UpdateAsync( GetId(), BuildObjectByConsole<TObject>(obj));
-                       ManageResult(result, (int)method.put);
-                        break;        
+                       ManageResult(result, Method.Put);
+                        break;
+                    case EnumCrud.Exit:
+                        Console.WriteLine("return");
+                        break;           
                     default:
-                        Console.WriteLine("Default case");
+                       option = EnumCrud.Exit;
                         break;
                 }
                 break;
 
-            }
+            }while(option != null  && option != EnumCrud.Exit);
         }
 
-        public static void ManageResult(object result, int NameMethod){
+        public static string BuildString(Type EnumType)
+        {
+            string result="";
+            foreach(int res in Enum.GetValues(EnumType))
+                result += $"{res} {Enum.GetName(EnumType, res)}{Environment.NewLine}";
+
+            return result;
+        }
+
+        public static void ManageResult(object result, Method NameMethod){
             if(result != null)
                 Console.WriteLine(result.ToString());
             else
                 ErrorManagement(NameMethod);
         }
-        public static void ManageResult<TObject>(IEnumerable<TObject> result, int NameMethod) {
+        public static void ManageResult<TObject>(IEnumerable<TObject> result, Method NameMethod) {
         if(result!=null){
             foreach(var obj in result){
                 Console.WriteLine(obj.ToString());
@@ -108,16 +123,16 @@ namespace JsonClient
             ErrorManagement(NameMethod);
         }
 
-        public static void ErrorManagement(int method){
+        public static void ErrorManagement(Method method){
             Console.ForegroundColor = ConsoleColor.Red;
             switch(method){
-                case 1:
+                case Method.Get:
                     Console.WriteLine("not found\n");
                     break;
-                case 2:
+                case Method.Post:
                     Console.WriteLine("error while Saved\n");
                     break;
-                case 3:
+                case Method.Put:
                     Console.WriteLine("error while updated\n");
                     break;
                 default:
@@ -154,9 +169,9 @@ namespace JsonClient
         public static object ParseValueToTheCorrect(Type pit, string val){
 
             if (pit == typeof(int))
-                return Int32.Parse(val);
+                return int.TryParse(val,out int res);
             else if (pit == typeof(decimal))
-                return Decimal.Parse(val);
+                return Decimal.TryParse(val, out Decimal res);
             else
                 return val;
         }
