@@ -3,13 +3,14 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
-
+using JsonClient.Entities;
+using System.Linq;
 namespace JsonClient
 {
     public class JsonClient<TModel>
     {
         private HttpClient client;
-
+        private string requestURL;
         public JsonClient()
         {
             client = new HttpClient()
@@ -18,75 +19,68 @@ namespace JsonClient
             };
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("aplicatiion/json"));
+            requestURL = $"{typeof(TModel).Name.ToLower()}s";
         }
-        public async Task<TModel> GetAsync(string id){
+
+        public async Task<TModel> GetAsync(string id)
+        {
             //get Comment
-            try{
-                var requestURL = $"{typeof(TModel).Name.ToLower()}s";
-                HttpResponseMessage response = await client.GetAsync($"{requestURL}/{id}");
-                response.EnsureSuccessStatusCode();
+            var result = default(TModel);
 
-                var result = await response.Content.ReadAsAsync<TModel>();
+            HttpResponseMessage response = await client.GetAsync($"{requestURL}/{id}");
+            if (response.IsSuccessStatusCode)
+                result = await response.Content.ReadAsAsync<TModel>();
 
-                return result;
-            }
-            catch(HttpRequestException e){
-                Console.WriteLine("{0}", e.Message);
-                return default(TModel);
-            }
+            return result;
         }
+        public async Task<IEnumerable<User>> GetByNameAsync(string name){
+            var results =default(IEnumerable<User>);
+            
+            HttpResponseMessage response = await client.GetAsync($"{requestURL}");
+            if (response.IsSuccessStatusCode)
+            {
+                results = await response.Content.ReadAsAsync<IEnumerable<User>>();
+                var result = results.Where(u => u.Name == name);
+                return result;
+            }else{
+                return Enumerable.Empty<User>();
+            }              
 
-       public async Task<IEnumerable<TModel>> GetAsync(){
+            
+        } 
+        public async Task<IEnumerable<TModel>> GetAsync()
+        {
             //get Comment
-            try{
-                var requestURL = $"{typeof(TModel).Name.ToLower()}s";
-                HttpResponseMessage response = await client.GetAsync(requestURL);
-                response.EnsureSuccessStatusCode();
+            var result = default(IEnumerable<TModel>);
+            HttpResponseMessage response = await client.GetAsync(requestURL);
+            if (response.IsSuccessStatusCode)
+                result = await response.Content.ReadAsAsync<IEnumerable<TModel>>();
 
-                var result = await response.Content.ReadAsAsync<IEnumerable<TModel>>();
-
-                return result;
-            }
-            catch(HttpRequestException e){
-                Console.WriteLine("{0}", e.Message);
-                return default(IEnumerable<TModel>);
-            }
+            return result;
         }
 
-        public async Task<TModel> postAsync(TModel model){
-             //post Comment
-             try{
-                 var requestURL = $"{typeof(TModel).Name.ToLower()}s";
-                 HttpResponseMessage response = await client.PostAsJsonAsync(requestURL, model);
-                 response.EnsureSuccessStatusCode();
+        public async Task<TModel> PostAsync(TModel model)
+        {
+            //post Comment
+            var result = default(TModel);
+            HttpResponseMessage response = await client.PostAsJsonAsync(requestURL, model);
+            if (response.IsSuccessStatusCode)
+                result = await response.Content.ReadAsAsync<TModel>();
 
-                 var models = await response.Content.ReadAsAsync<TModel>();
-                 Console.WriteLine("saved");
-                 return models;
+            return result;
+        }
 
-             }
-             catch(HttpRequestException e){
-                 Console.WriteLine("{0}", e.Message);
-                 return default(TModel);
-             }
-         }
+        public async Task<TModel> UpdateAsync(string id, TModel model)
+        {
+            //put Comment
+            var result = default(TModel);
+            HttpResponseMessage response = await client.PutAsJsonAsync($"{requestURL}/{id}", model);
+            if (response.IsSuccessStatusCode)
+                result = await response.Content.ReadAsAsync<TModel>();
 
-         public async Task<TModel> updateAsync(string id, TModel model){
-             //put Comment
-             try{
-                  var requestURL = $"{typeof(TModel).Name.ToLower()}s";
-                 HttpResponseMessage response = await client.PutAsJsonAsync($"{requestURL}/{id}", model);
-                 response.EnsureSuccessStatusCode();
-
-                 TModel models = await response.Content.ReadAsAsync<TModel>();
-                 Console.WriteLine("updated");
-                 return models;
-
-             }
-             catch(HttpRequestException e){
-                 Console.WriteLine("{0}", e.Message);
-                 return default(TModel);
-             }
-         }
+            return result;
         }
     }
+}
+
+

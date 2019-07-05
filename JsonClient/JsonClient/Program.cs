@@ -1,73 +1,224 @@
-﻿using System;
+﻿using JsonClient.Attributes;
+using JsonClient.Entities;
+using JsonClient.Extensions;
+using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace JsonClient
 {
     class Program
     {
+
         static async Task Main(string[] args)
         {
-           await runClient();
+            await RunClient();
         }
-        static async Task runClient(){
-            var comment = default(Comment);
-            int option = 0;
 
-               while(option < 5){
-                Console.WriteLine("Select an option:\n 1 Get all\n 2 GetById\n 3 Create new Comment\n 4 Update Comment\n 5 exit");
-                option = Int32.Parse(Console.ReadLine());
-                var client = new JsonClient<Comment>();
+        private static async Task RunClient()
+        {
+            EntitiesEnum? option = null;
+            do
+            {
+                Console.WriteLine("Select an Entity option:\n" + GetEnumValues<EntitiesEnum>());
+                if (int.TryParse(Console.ReadLine(), out int opt))
+                    option = (EntitiesEnum)opt;
 
                 switch (option)
                 {
-                    case 1:
-                       var comments = await client.GetAsync();
-                       foreach(Comment comm in comments){
-                            Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}", comm.name, comm.email, comm.body);
-                        }
+                    case EntitiesEnum.Comments:
+                        await Crudmenu<Comment>();
                         break;
-                    case 2:
-                        comment = await client.GetAsync(GetId());
-                        Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}", comment.name, comment.email, comment.body);
+                    case EntitiesEnum.Post:
+                        await Crudmenu<Post>();
                         break;
-                    case 3:
-                        comment = await client.postAsync(GetComment());
-                        Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}", comment.name, comment.email, comment.body);
+                    case EntitiesEnum.Album:
+                        await Crudmenu<Album>();
                         break;
-                    case 4:
-                        comment = await client.updateAsync(GetId(), GetComment());
-                        Console.WriteLine("name: {0}\nemail: {1}\nbody: {2}", comment.name, comment.email, comment.body);
-                        break;        
+                    case EntitiesEnum.Photo:
+                        await Crudmenu<Photo>();
+                        break;
+                    case EntitiesEnum.Todo:
+                        await Crudmenu<Todo>();
+                        break;
+                    case EntitiesEnum.User:
+                        await Crudmenu<User>();
+                        break;
+                    case EntitiesEnum.Exit:
+                        Console.WriteLine("bye");
+                        break;
                     default:
-                        Console.WriteLine("Default case");
+                        option = EntitiesEnum.Exit;
+                        break;
+                }
+            } while (option != null && option != EntitiesEnum.Exit);
+        }
+
+        private static async Task Crudmenu<TObject>() where TObject : EntityBase, new()
+        {
+            var client = new JsonClient<TObject>();
+            RequestActionsEnum? option = null;
+            var result = default(TObject);
+            do
+            {
+                Console.WriteLine($"Select an action:\n{GetEnumValues<RequestActionsEnum>(typeof(TObject))}");
+
+                if (int.TryParse(Console.ReadLine(), out int opt))
+                    option = (RequestActionsEnum)opt;
+
+                switch (option)
+                {
+                    case RequestActionsEnum.GetByName:
+                        var nameResults = await new JsonClient<User>().GetByNameAsync(PromptValue("Write Name"));
+                        ManageResult(nameResults, Method.Get);
+                        break;
+                    case RequestActionsEnum.Get:
+                        var results = await client.GetAsync();
+                        ManageResult(results, Method.Get);
+                        break;
+                    case RequestActionsEnum.GetById:
+                        result = await client.GetAsync(PromptValue("Write id"));
+                        ManageResult(result, Method.Get);
+                        break;
+                    case RequestActionsEnum.Post:
+                        result = await client.PostAsync(BuildObjectByConsole<TObject>());
+                        ManageResult(result, Method.Post);
+                        break;
+                    case RequestActionsEnum.Put:
+                        result = await client.UpdateAsync(PromptValue("Write id"), BuildObjectByConsole<TObject>());
+                        ManageResult(result, Method.Put);
+                        break;
+                    case RequestActionsEnum.Exit:
+                        Console.WriteLine("return");
+                        break;
+                    default:
+                        option = RequestActionsEnum.Exit;
                         break;
                 }
 
-               }
+            } while (option != null && option != RequestActionsEnum.Exit);
+        }
+        private static string GetEnumValues<TEnum>() where TEnum : Enum
+        {
+            var result = new StringBuilder();
+            var enumValues = Enum.GetValues(typeof(TEnum));
 
+            foreach (TEnum res in enumValues)
+            {
+                var value = Convert.ChangeType(res, typeof(int));
+                var displayName = res.GetDisplayName();
+                result.AppendLine($"{value} {displayName}");
+            }
+
+            return result.ToString();
         }
 
-        public static Comment GetComment(){
-            string name, email, body;
-            
-            Console.WriteLine("write name ");
-            name = Console.ReadLine();
-            Console.WriteLine("write email ");
-            email = Console.ReadLine();
-            Console.WriteLine("write body ");
-            body = Console.ReadLine();
-            
-            return new Comment(name, email, body);
-        }
+        private static string GetEnumValues<TEnum>(Type t) where TEnum : Enum
+        {
+            var result = new StringBuilder();
+            var enumValues = Enum.GetValues(typeof(TEnum));
 
-        public static string GetId(){
-            string id;
-            Console.WriteLine("Write id");
-            id = Console.ReadLine();
+            foreach (TEnum res in enumValues)
+            {
+                if(!t.Equals(typeof(User)))
+                {
+                    if(!res.GetSkip())
+                    {
+                    var value = Convert.ChangeType(res, typeof(int));
+                    var displayName = res.GetDisplayName();
+                    result.AppendLine($"{value} {displayName}");
+                    }
+                }else{
+                    var value = Convert.ChangeType(res, typeof(int));
+                    var displayName = res.GetDisplayName();
+                    result.AppendLine($"{value} {displayName}");
+                }    
+            }
 
-            return id;
+            return result.ToString();
         }
         
-    }
 
+        private static void ManageResult(object result, Method NameMethod)
+        {
+            if (result != null)
+                Console.WriteLine(result.ToString());
+            else
+                WriteError(NameMethod);
+        }
+
+        private static void ManageResult<TObject>(IEnumerable<TObject> result, Method NameMethod)
+        {
+            if (result != null)
+            {
+                foreach (var obj in result)
+                    Console.WriteLine(obj.ToString());
+            }
+            else
+                WriteError(NameMethod);
+        }
+
+        private static void WriteError(Method method)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            switch (method)
+            {
+                case Method.Get:
+                    Console.WriteLine("not found\n");
+                    break;
+                case Method.Post:
+                    Console.WriteLine("error while Saved\n");
+                    break;
+                case Method.Put:
+                    Console.WriteLine("error while updated\n");
+                    break;
+                default:
+                    break;
+            }
+            Console.ResetColor();
+        }
+
+        private static TObject BuildObjectByConsole<TObject>(TObject inputObject = null) where TObject : EntityBase
+        {
+            TObject obj = inputObject ?? Activator.CreateInstance<TObject>();
+            Type t = obj.GetType();
+            var properties = t.GetProperties();
+            foreach (var pi in properties)
+            {
+                if (!pi.HasAttribute<SkipAttribute>())
+                {
+                    if (pi.HasAttribute<IsClassAttribute>())
+                    {
+                        var instanceComplexObj = Activator.CreateInstance(pi.PropertyType);
+                        var complexObj = BuildObjectByConsole(instanceComplexObj as EntityBase);
+                        pi.SetValue(obj, complexObj);
+                    }
+                    else
+                    {
+                        string propertyValue = PromptValue($"write {pi.Name}");
+                        var pit = pi.PropertyType;
+                        pi.SetValue(obj, ParseString(pit, propertyValue));
+                    }
+                }
+            }
+            return obj;
+        }
+
+        private static object ParseString(Type type, string value)
+        {
+            if (type == typeof(int) && int.TryParse(value, out int intValue))
+                return intValue;
+            else if (type == typeof(decimal) && decimal.TryParse(value, out decimal decimalValue))
+                return decimalValue;
+            else
+                return value;
+        }
+
+        private static string PromptValue(string message)
+        {
+            Console.WriteLine($"{message} > ");
+            return Console.ReadLine();
+        }
+    }
 }
