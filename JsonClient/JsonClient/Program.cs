@@ -49,7 +49,8 @@ namespace JsonClient
                         Console.WriteLine("bye");
                         break;
                     default:
-                        option = EntitiesEnum.Exit;
+                        Console.WriteLine("please entry a valid option");
+                        await RunClient();
                         break;
                 }
             } while (option != null && option != EntitiesEnum.Exit);
@@ -93,7 +94,8 @@ namespace JsonClient
                         Console.WriteLine("return");
                         break;
                     default:
-                        option = RequestActionsEnum.Exit;
+                         Console.WriteLine("please entry a valid option");
+                         await Crudmenu<TObject>();
                         break;
                 }
 
@@ -124,19 +126,20 @@ namespace JsonClient
                 if(!t.Equals(typeof(User)))
                 {
                     if(!res.GetSkip())
-                    {
-                    var value = Convert.ChangeType(res, typeof(int));
-                    var displayName = res.GetDisplayName();
-                    result.AppendLine($"{value} {displayName}");
-                    }
+                    result.AppendLine(stringGenerate(res));
                 }else{
-                    var value = Convert.ChangeType(res, typeof(int));
-                    var displayName = res.GetDisplayName();
-                    result.AppendLine($"{value} {displayName}");
+                    result.AppendLine(stringGenerate(res));
                 }    
             }
 
             return result.ToString();
+        }
+        public static string stringGenerate(Enum res){
+             var value = Convert.ChangeType(res, typeof(int));
+             var displayName = res.GetDisplayName();
+
+            return $"{value} {displayName}";
+
         }
         
 

@@ -6,6 +6,7 @@ namespace JsonClient.Entities
     public class Comment : EntityBase
     {
         [Skip]
+
         public int PostId { get; set; }
 
         [Skip]
@@ -14,6 +15,9 @@ namespace JsonClient.Entities
         public string Name { get; set; }
 
         public string Email { get; set; }
+
+        [Display(Name = "User Name")]
+        public string UserName{get;set;}
 
         [Display(Name = "Content")]
         public string Body { get; set; }

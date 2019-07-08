@@ -6,6 +6,7 @@ namespace JsonClient.Entities
     public class Post : EntityBase
     {
         [Skip]
+        [Display(Name = "User Name")]
         public int UserId { get; set; }
 
         [Skip]
